@@ -1,5 +1,6 @@
 /* eslint-disable react/destructuring-assignment */
 import React, { Component } from 'react';
+import ClassCount from './ClassCount';
 
 class ClassInput extends Component {
   constructor(props) {
@@ -57,6 +58,9 @@ class ClassInput extends Component {
         </form>
         <h4>All the tasks!</h4>
         {/* The list of all the To-Do's, displayed */}
+        <ClassCount
+          todos={this.state.todos}
+        />
         <ul>
           {this.state.todos.map((todo) => (
             <li key={todo}>

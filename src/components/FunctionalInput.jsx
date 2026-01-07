@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import FunctionalCount from './FunctionalCount';
 
 // eslint-disable-next-line react/function-component-definition, react/prop-types
 const FunctionalInput = ({ name }) => {
@@ -21,9 +22,7 @@ const FunctionalInput = ({ name }) => {
   };
 
   function handleDelete(todoToDelete) {
-    console.log(todos);
     const newTodos = todos.filter((todo) => todo !== todoToDelete);
-    console.log(newTodos);
     setTodos(newTodos);
   }
 
@@ -44,6 +43,9 @@ const FunctionalInput = ({ name }) => {
       </form>
       <h4>All the tasks!</h4>
       {/* The list of all the To-Do's, displayed */}
+      <FunctionalCount
+        todos={todos}
+      />
       <ul>
         {todos.map((todo) => (
           <li key={todo}>
