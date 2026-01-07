@@ -9,11 +9,16 @@ class ClassInput extends Component {
     this.state = {
       todos: ['Just some demo tasks', 'As an example'],
       inputVal: '',
+      editInputVal: null,
+      editingTodoIndex: null,
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
+    this.startEdit = this.startEdit.bind(this);
+    this.handleEditInputChange = this.handleEditInputChange.bind(this);
+    this.endEdit = this.endEdit.bind(this);
   }
 
   handleInputChange(e) {
@@ -31,11 +36,37 @@ class ClassInput extends Component {
     }));
   }
 
-  handleDelete(todoToDelete) {
-    const newTodos = this.state.todos.filter((todo) => todo !== todoToDelete);
+  handleDelete(indexOfTodoToDelete) {
+    const newTodos = this.state.todos.toSpliced(indexOfTodoToDelete, 1);
     this.setState((state) => ({
       ...state,
       todos: newTodos,
+    }));
+  }
+
+  startEdit(indexOfTodoToEdit) {
+    this.setState((state) => ({
+      ...state,
+      editingTodoIndex: indexOfTodoToEdit,
+      editInputVal: state.todos[indexOfTodoToEdit],
+    }));
+  }
+
+  handleEditInputChange(e) {
+    this.setState((state) => ({
+      ...state,
+      editInputVal: e.target.value,
+    }));
+  }
+
+  endEdit() {
+    const newTodos = this.state.todos.slice();
+    newTodos[this.state.editingTodoIndex] = this.state.editInputVal;
+    this.setState((state) => ({
+      ...state,
+      todos: newTodos,
+      editInputVal: null,
+      editingTodoIndex: null,
     }));
   }
 
@@ -54,7 +85,7 @@ class ClassInput extends Component {
             value={this.state.inputVal}
             onChange={this.handleInputChange}
           />
-          <button type="submit">Submit</button>
+          <button type="submit" disabled={this.state.editingTodoIndex !== null}>Submit</button>
         </form>
         <h4>All the tasks!</h4>
         {/* The list of all the To-Do's, displayed */}
@@ -62,10 +93,25 @@ class ClassInput extends Component {
           todos={this.state.todos}
         />
         <ul>
-          {this.state.todos.map((todo) => (
+          {this.state.todos.map((todo, index) => (
             <li key={todo}>
-              {todo}
-              <button type='button' onClick={() => this.handleDelete(todo)}>X</button>
+              {(this.state.editingTodoIndex === index) ? (
+                <>
+                  <input
+                    type='text'
+                    name='class-task-edit'
+                    value={this.state.editInputVal}
+                    onChange={this.handleEditInputChange}
+                  />
+                  <button type='button' onClick={this.endEdit}>Resubmit</button>
+                </>
+              ) : (
+                <>
+                  {todo}
+                  <button type="button" onClick={() => this.startEdit(index)} disabled={this.state.editingTodoIndex !== null && this.state.editingTodoIndex !== index}>Edit</button>
+                  <button type='button' onClick={() => this.handleDelete(index)} disabled={this.state.editingTodoIndex !== null}>X</button>
+                </>
+              )}
             </li>
           ))}
         </ul>
