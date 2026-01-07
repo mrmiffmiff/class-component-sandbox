@@ -10,6 +10,8 @@ const FunctionalInput = ({ name }) => {
   */
   const [todos, setTodos] = useState(['Just some demo tasks', 'As an example']);
   const [inputVal, setInputVal] = useState('');
+  const [editInputVal, setEditInputVal] = useState(null);
+  const [editingTodoIndex, setEditingTodoIndex] = useState(null);
 
   const handleInputChange = (e) => {
     setInputVal(e.target.value);
@@ -21,9 +23,26 @@ const FunctionalInput = ({ name }) => {
     setInputVal('');
   };
 
-  function handleDelete(todoToDelete) {
-    const newTodos = todos.filter((todo) => todo !== todoToDelete);
+  function handleDelete(indexOfTodoToDelete) {
+    const newTodos = todos.toSpliced(indexOfTodoToDelete, 1);
     setTodos(newTodos);
+  }
+
+  function startEdit(indexOfTodoToEdit) {
+    setEditingTodoIndex(indexOfTodoToEdit);
+    setEditInputVal(todos[indexOfTodoToEdit]);
+  }
+
+  function handleEditInputChange(e) {
+    setEditInputVal(e.target.value);
+  }
+
+  function endEdit() {
+    const newTodos = todos.slice();
+    newTodos[editingTodoIndex] = editInputVal;
+    setTodos(newTodos);
+    setEditInputVal(null);
+    setEditingTodoIndex(null);
   }
 
   return (
@@ -39,7 +58,7 @@ const FunctionalInput = ({ name }) => {
           value={inputVal}
           onChange={handleInputChange}
         />
-        <button type="submit">Submit</button>
+        <button type="submit" disabled={editingTodoIndex !== null}>Submit</button>
       </form>
       <h4>All the tasks!</h4>
       {/* The list of all the To-Do's, displayed */}
@@ -47,10 +66,25 @@ const FunctionalInput = ({ name }) => {
         todos={todos}
       />
       <ul>
-        {todos.map((todo) => (
+        {todos.map((todo, index) => (
           <li key={todo}>
-            {todo}
-            <button type='button' onClick={() => handleDelete(todo)}>X</button>
+            {(editingTodoIndex === index) ? (
+              <>
+                <input
+                  type='text'
+                  name='task-edit'
+                  value={editInputVal}
+                  onChange={handleEditInputChange}
+                />
+                <button type='button' onClick={endEdit}>Resubmit</button>
+              </>
+            ) : (
+              <>
+                {todo}
+                <button type='button' onClick={() => startEdit(index)} disabled={editingTodoIndex !== null && editingTodoIndex !== index}>Edit</button>
+                <button type='button' onClick={() => handleDelete(index)} disabled={editingTodoIndex !== null}>X</button>
+              </>
+            )}
           </li>
         ))}
       </ul>
